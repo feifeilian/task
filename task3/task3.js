@@ -1,7 +1,9 @@
 window.onload = function() {
+    //取相同类的第一个元素
     var getClass = function(cls) {
-        return document.getElementsByClassName(cls)[0];
-    }
+            return document.getElementsByClassName(cls)[0];
+        }
+        //添加侦听事件
     var addEvent = function(obj, event, fn) {
         if (obj.addEventListener) {
             obj.addEventListener(event, fn, false);
@@ -9,175 +11,130 @@ window.onload = function() {
             obj.attachEvent('on' + event, fn);
         }
     }
-    var clickindex;
-    var deleteindex;
-    var screenw;
-    var screenh;
-    var viewh;
+    var clickIndex;
+    var deleteIndex;
+    var navsideViewHeight;
     var navside = getClass('nav-side');
     var navcon = getClass('nav-con');
-
-    var mainmenu = document.getElementsByClassName('mainmenu')[0];
-
+    var mainMenu = getClass('mainmenu');
+    var tablePop = getClass('table-pop');
+    var deletePop = getClass('pop-delete');
+    var shawdowBody = getClass('shawdow');
+    var table = getClass('table-all');
     // 利用json数据动态生成二级菜单
     function getMenu() {
         for (var i in menus) {
             var li = document.createElement("li");
+            var subMenuLength = menus[i].sub_menus.length;
             li.innerHTML = '<p>' + menus[i].name + '</p>';
-            if (menus[i].sub_menus.lenght != 0) {
-                var subul = document.createElement("ul");
-                subul.className = "submenu";
-                for (var j = 0; j < menus[i].sub_menus.length; j++) {
-                    var subli = document.createElement("li");
-                    subli.innerHTML = menus[i].sub_menus[j].name;
-                    subul.appendChild(subli);
+            if (subMenuLength != 0) {
+                var subUl = document.createElement("ul");
+                subUl.className = "submenu";
+                for (var j = 0; j < subMenuLength; j++) {
+                    var subLi = document.createElement("li");
+                    subLi.innerHTML = menus[i].sub_menus[j].name;
+                    subUl.appendChild(subLi);
                 }
-                li.appendChild(subul);
+                li.appendChild(subUl);
             }
-            mainmenu.appendChild(li);
+            mainMenu.appendChild(li);
         }
-    }
-    getMenu();
-    var offseth = navside.scrollHeight; //动态生成后获取navside的内容高度
-    //获得一级标签元素
-    function getChildren(obj, tag) {
-        var objChild = [];
-        var objs = obj.getElementsByTagName(tag);
-        for (var i = 0, j = objs.length; i < j; ++i) {
-            if (objs[i].nodeType != 1) {
-                alert(objs[i].nodeType);
-                continue;
-            }
-            var temp = objs[i].parentNode;
-            if (temp.nodeType == 1) {
-                if (temp == obj) {
-                    objChild.push(objs[i]);
-                }
-            }
-        }
-        return objChild;
     }
     //点击一级菜单
-    function showsubmenu() {
-        var lis = getChildren(mainmenu, "li");
-        var subul = document.getElementsByClassName('submenu');
-        addEvent(mainmenu, 'click', function(e) {
-
-            if (e.target && e.target.nodeName == "P") {
-                if (e.target.nextSibling.style.display != "block") {
-                    e.target.nextSibling.style.display = "block";
-                } else {
-                    e.target.nextSibling.style.display = "none";
-                }
+    function showSubmenu(e) {
+        if (e.target && e.target.nodeName == "P") {
+            if (e.target.nextSibling.style.display != "block") {
+                console.log( e.target.nextSibling.style.display);
+                e.target.nextSibling.style.display = "block";
+            } else {
+                e.target.nextSibling.style.display = "none";
             }
-        });
-        
+        }
     }
-    showsubmenu();
     //渲染表格数据
-    function showtable() {
-        var table = getClass('table-all');
+    function showTable() {
         table.innerHTML = '';
         for (var i in tabledata) {
             if (tabledata[i].id == 0) {
-                var trhead = document.createElement("tr");
-                trhead.className = "tablehead";
-                trhead.innerHTML = '<th>' + tabledata[i].name + '</th>' + '<th>' + tabledata[i].content + '</th>' + '<th>' + tabledata[i].value + '</th>' + '<th>' + tabledata[i].operate + '</th>';
-                table.appendChild(trhead);
+                var trHead = document.createElement("tr");
+                trHead.className = "tablehead";
+                trHead.innerHTML = '' 
+                + '<th>' + tabledata[i].name + '</th>' 
+                + '<th>' + tabledata[i].content + '</th>' 
+                + '<th>' + tabledata[i].value + '</th>' 
+                + '<th>' + tabledata[i].operate + '</th>';
+                table.appendChild(trHead);
             } else {
-                var trbody = document.createElement("tr");
-                trbody.innerHTML = '<tr><td>' + tabledata[i].name + '</td>' + '<td>' + tabledata[i].content + '</td>' + '<td>' + tabledata[i].value + '</td>' + "<td><button class='edit' dataname='" + tabledata[i].name + "' datacon='" + tabledata[i].content + "' datavalue='" + tabledata[i].value + "''>" + "编辑</button><button class='delete'>删除</button></td></tr>";
-                table.appendChild(trbody);
+                var trBody = document.createElement("tr");
+                trBody.innerHTML =''
+                + '<tr><td>' + tabledata[i].name + '</td>' 
+                + '<td>' + tabledata[i].content + '</td>'
+                + '<td>' + tabledata[i].value + '</td>' 
+                + "<td class='operate-btn'><button class='edit' dataname='" 
+                + tabledata[i].name + "' datacon='" 
+                + tabledata[i].content + "' datavalue='" 
+                + tabledata[i].value + "' dataid='" 
+                + tabledata[i].id + "''>" 
+                + "编辑</button><button class='delete'" + "dataid='"
+                + tabledata[i].id + "''>删除</button></td></tr>";
+                table.appendChild(trBody);
             }
         }
-        addOperationEvent();
-
     }
-    showtable();
-    //选然表格后在获取元素
-    var col = document.getElementsByTagName('tr')[1].getElementsByTagName('td');
-    var tablehead = getClass('tablehead');
-    var tableth = tablehead.getElementsByTagName('th');
-    var tablepop = getClass('table-pop');
-    var deletepop = getClass('pop-delete');
-    //点击编辑按钮
-
-
-    var shawdow = getClass('shawdow');
-
-    function addOperationEvent() {
-        var edits = document.getElementsByClassName('edit');
-        var deletes = document.getElementsByClassName('delete');
-        for (let i = 0; i < edits.length; i++) {
-            addEvent(edits[i], 'click', function(e) {
-                tablepop.style.display = "block";
-                shawdow.style.display = "block";
-                document.body.style = "overflow:hidden";
-                getClass('name').value = e.target.getAttribute('dataname');
-                getClass('con').value = e.target.getAttribute('datacon');
-                getClass('value').value = e.target.getAttribute('datavalue');
-                clickindex = Object.keys(tabledata)[i + 1];
-                console.log(clickindex)
-            });
-            addEvent(deletes[i], 'click', function(e) {
-                deletepop.style.display = 'block';
-                shawdow.style.display = "block";
-                document.body.style = "overflow:hidden";
-                deleteindex = Object.keys(tabledata)[i + 1];
-            })
+    //表格编辑和删除函数
+    function addEdit(e) {
+        if (e.target && e.target.className == 'edit') {
+            pop(tablePop,true);
+            getClass('name').value = e.target.getAttribute('dataname');
+            getClass('con').value = e.target.getAttribute('datacon');
+            getClass('value').value = e.target.getAttribute('datavalue');
+            clickIndex = e.target.getAttribute('dataid');
         }
     }
-    //修改信息
-    addEvent(getClass('btnconfirm'), 'click', function() {
-        tabledata[clickindex].name = getClass('name').value;
-        tabledata[clickindex].content = getClass('con').value;
-        tabledata[clickindex].value = getClass('value').value;
-        console.log(tabledata);
-        showtable();
-        tablepop.style.display = "none";
-        shawdow.style.display = "none";
-        document.body.style = "overflow:scroll";
-    });
-    addEvent(getClass('btncancel'), 'click', function() {
-        tablepop.style.display = "none";
-        shawdow.style.display = "none";
-        document.body.style = "overflow:scroll";
-    });
 
-    addEvent(getClass('del-btn'), 'click', function() {
-        delete tabledata[deleteindex];
-        showtable();
-        // deletes[deleteindex].parentNode.parentNode.innerHTML=null;
-        deletepop.style.display = "none";
-        shawdow.style.display = "none";
-        document.body.style = "overflow:scroll";
-    });
-    addEvent(getClass('cancel-btn'), 'click', function() {
-            deletepop.style.display = "none";
-            shawdow.style.display = "none";
-            document.body.style = "overflow:scroll";
-        })
-        //滚动过程
-    var getInfo = function() {
-        screenw = document.documentElement.clientWidth || document.body.clientWidth;
-        screenh = document.documentElement.clientHeight || document.body.clientHeight;
-        viewh = screenh - navcon.getBoundingClientRect().top;
-        navside.style.height = viewh + 'px';
+    function addDel(e) {
+        if (e.target && e.target.className == 'delete') {
+            pop(deletePop,true);
+            deleteIndex = e.target.getAttribute('dataid');
+        }
     }
-    getInfo();
+    //弹框出现与消失函数
+    function pop(obj,isPop) {
+        if(isPop){
+            obj.style.display = 'block';
+            shawdowBody.style.display = "block";
+            document.body.style = "overflow:hidden";
+        } else {
+            obj.style.display = "none";
+            shawdowBody.style.display = "none";
+            document.body.style = "overflow:scroll";
+        }
+       
+    }
 
-    addEvent(window, 'scroll', function() {
-        var sidetop = navcon.getBoundingClientRect().top;
-        var scrollh = document.documentElement.scrollTop || document.body.scrollTop;
-        if ((viewh + scrollh) >= offseth) {
+    //重新获得浏览器改变大小后的信息
+    function getInfo() {
+        var screenHeight = document.documentElement.clientHeight || document.body.clientHeight;
+        navsideViewHeight = screenHeight - navcon.getBoundingClientRect().top;
+        navside.style.height = navsideViewHeight + 'px';
+    }
+    //滚动过程
+    function scrollWeb() {
+        var tablehead = getClass('tablehead');
+        var tableth = tablehead.getElementsByTagName('th');
+        var col = document.getElementsByTagName('tr')[1].getElementsByTagName('td');
+        var navsideOffsetHeight = navside.scrollHeight; //动态生成后获取navside的内容高度
+        var sideTop = navcon.getBoundingClientRect().top;
+        var navconScrollHeight = document.documentElement.scrollTop || document.body.scrollTop;
+        if ((navsideViewHeight + navconScrollHeight) >= navsideOffsetHeight) {
+
             navside.style.overflowY = "hidden";
             navside.style.height = 'fit-content';
         } else {
             navside.style.overflowY = "scroll";
-            navside.style.height = viewh + scrollh + 'px';
+            navside.style.height = navsideViewHeight + navconScrollHeight + 'px';
         }
-
-        if (sidetop <= 0) {
+        if (sideTop <= 0) {
             tablehead.style.position = 'fixed';
             tablehead.style.marginLeft = "-1px";
             for (var i = 0; i < tableth.length; i++) {
@@ -186,11 +143,35 @@ window.onload = function() {
         } else {
             tablehead.style.position = 'static';
         }
-    })
+    }
 
-    addEvent(window, 'resize', function() {
-        getInfo();
-    })
+    //主函数
+    getInfo();
+    getMenu();
+    showTable();
+    addEvent(mainMenu, 'click', showSubmenu);
+    addEvent(window, 'scroll', scrollWeb);
+    addEvent(window, 'resize', getInfo);
+    addEvent(table, 'click', addEdit);
+    addEvent(table, 'click', addDel);
+    addEvent(getClass('edit-confirm'), 'click', function() {
+        tabledata[clickIndex].name = getClass('name').value;
+        tabledata[clickIndex].content = getClass('con').value;
+        tabledata[clickIndex].value = getClass('value').value;
+        showTable();
 
+        pop(tablePop,false);
+    });
+    addEvent(getClass('edit-cancel'), 'click', function() {
+        pop(tablePop,false);
+    });
 
+    addEvent(getClass('del-confirm'), 'click', function() {
+        delete tabledata[deleteIndex];
+        showTable();
+        pop(deletePop,false);
+    });
+    addEvent(getClass('del-cancel'), 'click', function() {
+        pop(deletePop,false);
+    });
 }
