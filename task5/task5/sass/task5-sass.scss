@@ -1,0 +1,138 @@
+*{
+	padding:0;
+	margin:0;
+	box-sizing:border-box;
+}
+ul{
+	list-style:none;
+}
+body{
+	font-family: "Times New Roman", Times, sans-serif;
+}
+.header{
+	.nav{
+       height:60px;
+       line-height:60px;
+       background-color:#000;
+       color:#fff;
+       font-size:24px;
+       
+	}
+	.logo{
+       	float:left;
+       }
+       .header-menu{
+       	float:right;
+       	li{
+       		float:left;
+       		padding-left:20px;
+       	}
+       }
+	.banner{
+         img{
+         	width:100%;
+         }
+	}
+}
+.content{
+	display:flex;
+	justify-content:space-between;
+	flex-wrap:wrap;
+	padding:10px;
+}
+.box-1{
+	width:70%;
+	display: flex;
+	margin-bottom:20px;
+    .pic{
+    flex:1;
+    margin-right:10px;
+    position:relative;
+    height:200px;
+    img{
+    	width:100%;
+    	height:100%;
+    }
+    
+   }
+
+}
+.text{
+    	width:100%;
+    	position: absolute;
+    	bottom:0;
+    	background-color:#000;
+    	opacity:.5;
+    	color:#fff;
+    	text-align:center;
+    }
+
+.box-2{
+	width:30%;
+	height:150px;
+	position:relative;
+	img{
+		width:100%;
+		height:100%;
+	}
+	.box2-text{
+		@extend .text
+	}
+
+}
+.box-3{
+	padding-top:20px;
+	width:70%;
+	.box-content{
+		display:flex;
+	}
+	.pic-content{
+		flex:1 1 40%;
+		img{
+			width:100%;
+		}
+	}
+	.text-content{
+		flex: 1 1 60%;
+		padding-left:20px;
+	}
+}
+.box-4{
+	width:30%;
+	padding-left:20px;
+	ul{
+		text-align:left;
+		margin-top:-50px;
+		li{
+			padding:10px 0;
+		}
+	}
+}
+
+@media screen and (max-width:1024px){
+	.header-menu{
+		position:fixed;
+		bottom:0;
+		width:100%;
+		color: #000;
+		background-color: #EEEEEE;
+		border:1px solid #CBCDD0;
+		display:flex;
+		justify-content:space-between;
+	}
+	.nav .logo{
+		float:none;
+		text-align:center;
+	}
+	.box-1,.box-2,.box-3,.box-4{
+		width: 100%;
+	}
+	.box-4 ul{
+		margin-top: 10px;
+	}
+	.box-3{
+		.box-content{
+			flex-direction:row-reverse;
+		}
+	}
+}
