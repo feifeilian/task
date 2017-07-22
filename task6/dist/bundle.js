@@ -144,7 +144,7 @@ window.onload = function () {
     add.on("tap", toEdit);
     complete.on("tap", editData);
     cancel.on("tap", function () {
-        return change(true);
+        return changeList('all');
     });
     choose.on("tap", chooseTag);
     list.on("swipeleft", function () {

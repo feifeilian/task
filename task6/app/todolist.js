@@ -51,7 +51,7 @@ window.onload = () => {
     list.on("tap", operateList);
     add.on("tap", toEdit);
     complete.on("tap", editData);
-    cancel.on("tap", () => change(true));
+    cancel.on("tap", () => changeList('all'));
     choose.on("tap", chooseTag)
     list.on("swipeleft", () => swift(event, 'operate'));
     list.on("swiperight", () => swift(event, 'status'));
