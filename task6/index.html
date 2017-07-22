@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=3, minimum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+    <title>TodoList</title>
+    <!-- <script src="hammer.js"></script> -->
+</head>
+
+<body>
+    <div class="todolist">
+        <div class="header">
+            <span><button class="btn-cancel">Cancel</button></span>
+            <span>Title</span>
+            <span class="add"><button>Add</button></span>
+            <span class="complete"><button>Done</button></span>
+        </div>
+        <div class="content-body">
+            <div class="prompt">Now! The One Thing is</div>
+            <div class="choose">
+                <div class="priority">
+                    <div class="item"><span class="high"></span> 高优</div>
+                    <div class="item"><span class="mid"></span> 中优</div>
+                    <div class="item"><span class="low"></span> 低优</div>
+                </div>
+                <div class="shedule">
+                    <div class="item"><span class="ing"></span> 进行中</div>
+                    <div class="item"><span class="will"></span> 待办</div>
+                    <div class="item"><span class="done"></span> 已完成</div>
+                </div>
+            </div>
+            <ul class="list"></ul>
+            <textarea name="" id="" cols="30" rows="10" class='text-input'></textarea>
+        </div>
+        <div class="footer ">
+            <span id="onething">OneThing</span>
+            <span id="allthing">All</span>
+        </div>
+    </div>
+    <script type="text/javascript" src="./dist/bundle.js"></script>
+</body>
+
+</html>
