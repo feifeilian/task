@@ -211,12 +211,11 @@ function changeList(type) {
         getByClass('text-input').style.display = 'none';
         var items = getByClass('choose').getElementsByClassName('item');
         for (var i = 0; i < items.length; i++) {
-            items[i].className = "item";
+            items[i].className = "item type";
         }
     } else {
         var oneData = {};
         for (var _i in data) {
-            console.log(_i, data[_i]);
             if (data[_i].priority == 'high' && data[_i].status == 'ing') {
                 oneData[_i] = data[_i];
                 break;
@@ -250,9 +249,15 @@ function toEdit() {
     var itemsStatus = getByClass('shedule').getElementsByTagName('div');
     for (var i = 0; i < itemsPriotity.length; i++) {
         itemsPriotity[i].className = "item priority-item";
+        if (itemsPriotity[i].getElementsByTagName('span')[0].className == edit_priority) {
+            showActive(itemsPriotity, itemsPriotity[i]);
+        }
     }
     for (var _i2 = 0; _i2 < itemsStatus.length; _i2++) {
         itemsStatus[_i2].className = 'item status-item';
+        if (itemsStatus[_i2].getElementsByTagName('span')[0].className == edit_status) {
+            showActive(itemsStatus, itemsStatus[_i2]);
+        }
     }
 }
 
@@ -260,7 +265,10 @@ function refresh() {
     var taskStorage = window.sessionStorage;
     var d = JSON.stringify(data);
     taskStorage.setItem("taskdata", d);
-    window.location.reload();
+    edit_id = -1;
+    edit_text = 'this is a new task';
+    edit_status = 'will';
+    edit_priority = 'low';
 }
 
 function changeStatus(el, status) {
@@ -276,7 +284,10 @@ function operateList(event) {
     if (cls == 'edit') {
         edit_text = data[id].text;
         edit_id = id;
+        edit_priority = data[id].priority;
+        edit_status = data[id].status;
         toEdit();
+        refresh();
         return;
     }
     if (cls == "change-done") {
@@ -293,11 +304,11 @@ function operateList(event) {
         event.target.parentNode.style.display = 'none';
     }
     refresh();
+    changeList('all');
 }
 
 function editData() {
     var changetext = getByClass('text-input').value;
-    console.log(changetext);
     if (edit_id == -1) {
         edit_id = Date.now();
         data[edit_id] = {};
@@ -306,6 +317,7 @@ function editData() {
     data[edit_id].priority = edit_priority;
     data[edit_id].status = edit_status;
     refresh();
+    changeList('all');
 }
 
 function chooseTag(e) {
@@ -318,6 +330,57 @@ function chooseTag(e) {
         var _items = document.getElementsByClassName('status-item');
         showActive(_items, e.target);
         edit_status = e.target.getElementsByTagName('span')[0].className;
+    }
+    if (e.target && hasClass(e.target, 'type')) {
+        var selected_priority = {};
+        var selected_status = {};
+        var renderList = {};
+        if (hasClass(e.target, 'selected')) {
+            removeClass(e.target, 'selected');
+        } else {
+            addClass(e.target, 'selected');
+        }
+        var prioSel = getByClass('priority').getElementsByClassName('selected');
+        for (var i = 0; i < prioSel.length; i++) {
+            var proCls = prioSel[i].getElementsByTagName('span')[0].className;
+            selected_priority[proCls] = true;
+        }
+
+        var stSel = getByClass('shedule').getElementsByClassName('selected');
+        for (var i = 0; i < stSel.length; i++) {
+            var _proCls = stSel[i].getElementsByTagName('span')[0].className;
+            selected_status[_proCls] = true;
+        }
+
+        var flag = false;
+        for (var _i3 in data) {
+            if (data[_i3].priority in selected_priority) {
+                flag = true;
+                renderList[_i3] = data[_i3];
+            }
+        }
+        var renderData = {};
+        if (!flag) {
+            for (var _i4 in data) {
+                if (data[_i4].status in selected_status) {
+                    renderData[_i4] = data[_i4];
+                }
+            }
+        } else {
+            //const renderData={};
+            var index = false;
+            for (var _i5 in renderList) {
+                if (renderList[_i5].status in selected_status) {
+                    index = true;
+                    renderData[_i5] = data[_i5];
+                }
+            }
+            if (!index) {
+                showList(renderList);
+                return;
+            }
+        }
+        showList(renderData);
     }
 }
 
@@ -894,7 +957,7 @@ exports = module.exports = __webpack_require__(6)(undefined);
 
 
 // module
-exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  box-sizing: border-box;\n}\nbody {\n  font-family: \"Times New Roman\", Times, sans-serif;\n}\nbutton {\n  border-style: none;\n  background-color: transparent;\n}\nul {\n  list-style: none;\n}\n.border {\n  border: 1px solid #C0C3C6;\n}\n.todolist {\n  width: 100%;\n  min-height: 100vh;\n  margin: 0 auto;\n  border: 1px solid #C0C3C6;\n}\n.header {\n  top: 0;\n  width: 100%;\n  height: 60px;\n  line-height: 60px;\n  position: fixed;\n  bottom: 0;\n  background-color: #D8D8D8;\n  border-top: 1px solid #C0C3C6;\n  display: flex;\n  font-weight: 700;\n  font-size: 20px;\n}\n.header button {\n  font-weight: 700;\n  padding: 5px 10px;\n  font-size: 20px;\n  cursor: pointer;\n  border: 1px solid #C0C3C6;\n}\n.header .btn-cancel {\n  display: none;\n}\n.header .complete {\n  display: none;\n}\n.header span {\n  flex: 1;\n  text-align: center;\n  cursor: pointer;\n}\n.footer {\n  width: 100%;\n  height: 60px;\n  line-height: 60px;\n  position: fixed;\n  bottom: 0;\n  background-color: #D8D8D8;\n  border-top: 1px solid #C0C3C6;\n  display: flex;\n  font-weight: 700;\n  font-size: 20px;\n}\n.footer span {\n  flex: 1;\n  text-align: center;\n  cursor: pointer;\n}\n.content-body {\n  margin: 60px 0;\n  padding: 0 10px;\n}\n.prompt {\n  display: none;\n  font-size: 20px;\n  padding: 10px;\n}\n.list {\n  width: 100%;\n}\n.list li {\n  display: flex;\n  position: relative;\n  padding: 5px 10px;\n  margin-top: 10px;\n  border: 1px solid #C0C3C6;\n}\n.list li .status-icon {\n  width: 30px;\n  height: 100%;\n  align-self: center;\n}\n.list li p {\n  margin-left: 10px;\n}\n.list li .text {\n  padding-left: 20px;\n}\n.priority,\n.shedule {\n  height: 60px;\n  line-height: 60px;\n  background-color: #FEEAEA;\n  display: flex;\n  justify-content: space-between;\n  text-align: center;\n  padding: 5px 0;\n  margin-left: -10px;\n  margin-right: -10px;\n}\n.priority .item,\n.shedule .item {\n  flex: 1;\n  cursor: pointer;\n}\n.priority .priority-item,\n.shedule .priority-item,\n.priority .status-item,\n.shedule .status-item {\n  margin: 0 10px;\n  border: 1px solid #C0C3C6;\n}\n.priority .item.active,\n.shedule .item.active {\n  border: 1px solid red;\n}\n.priority .high,\n.shedule .high {\n  display: inline-block;\n  width: 16px;\n  height: 16px;\n  border-radius: 16px;\n  background-color: #CE0B24;\n  border: 1px solid #C0C3C6;\n}\n.priority .mid,\n.shedule .mid {\n  display: inline-block;\n  width: 16px;\n  height: 16px;\n  border-radius: 16px;\n  background-color: #F7E63B;\n  border: 1px solid #C0C3C6;\n}\n.priority .low,\n.shedule .low {\n  display: inline-block;\n  width: 16px;\n  height: 16px;\n  border-radius: 16px;\n  background-color: #437414;\n  border: 1px solid #C0C3C6;\n}\n.shedule {\n  border-top: 1px solid #C0C3C6;\n  background-color: #ECFEEB;\n}\n.ing {\n  display: inline-block;\n  position: relative;\n  border-width: 10px;\n  border-style: solid;\n  border-color: transparent transparent transparent #D8D8D8;\n}\n.will {\n  position: relative;\n  display: inline-block;\n  height: 16px;\n  width: 16px;\n  border: none;\n  border-left: 5px solid #D8D8D8;\n}\n.will:after {\n  content: '';\n  display: 'block';\n  position: absolute;\n  left: 5px;\n  height: 16px;\n  border: none;\n  border-left: inherit;\n}\n.done {\n  height: 16px;\n  border: none;\n  border-left: 16px solid #D8D8D8;\n}\n.list-item .high {\n  border-left-color: #CE0B24;\n}\n.list-item .mid {\n  border-left-color: #F7E63B;\n}\n.list-item .low {\n  border-left-color: #437414;\n}\n.operate {\n  width: 200px;\n  height: 100%;\n  background-color: #D8D8D8;\n  position: absolute;\n  right: 0;\n  top: 0;\n  border-left: 1px solid #C0C3C6;\n  display: flex;\n  display: none;\n}\n.operate span {\n  flex: 1;\n  align-self: center;\n  text-align: center;\n}\n.status {\n  left: 0;\n  border-left: none;\n  border-right: 1px solid #C0C3C6;\n  width: 200px;\n  height: 100%;\n  background-color: #D8D8D8;\n  position: absolute;\n  right: 0;\n  top: 0;\n  border-left: 1px solid #C0C3C6;\n  display: flex;\n  display: none;\n}\n.status span {\n  flex: 1;\n  align-self: center;\n  text-align: center;\n}\n.text-input {\n  margin-top: 20px;\n  padding: 10px;\n  width: 100%;\n  min-height: 200px;\n  display: none;\n  border: 1px solid #C0C3C6;\n}\n", ""]);
+exports.push([module.i, "* {\n  padding: 0;\n  margin: 0;\n  box-sizing: border-box;\n}\nbody {\n  font-family: \"Times New Roman\", Times, sans-serif;\n}\nbutton {\n  border-style: none;\n  background-color: transparent;\n}\nul {\n  list-style: none;\n}\n.border {\n  border: 1px solid #C0C3C6;\n}\n.todolist {\n  width: 100%;\n  min-height: 100vh;\n  margin: 0 auto;\n  border: 1px solid #C0C3C6;\n}\n.header {\n  top: 0;\n  width: 100%;\n  height: 60px;\n  line-height: 60px;\n  position: fixed;\n  bottom: 0;\n  background-color: #D8D8D8;\n  border-top: 1px solid #C0C3C6;\n  display: flex;\n  font-weight: 700;\n  font-size: 20px;\n}\n.header button {\n  font-weight: 700;\n  padding: 5px 10px;\n  font-size: 20px;\n  cursor: pointer;\n  border: 1px solid #C0C3C6;\n}\n.header .btn-cancel {\n  display: none;\n}\n.header .complete {\n  display: none;\n}\n.header span {\n  flex: 1;\n  text-align: center;\n  cursor: pointer;\n}\n.footer {\n  width: 100%;\n  height: 60px;\n  line-height: 60px;\n  position: fixed;\n  bottom: 0;\n  background-color: #D8D8D8;\n  border-top: 1px solid #C0C3C6;\n  display: flex;\n  font-weight: 700;\n  font-size: 20px;\n}\n.footer span {\n  flex: 1;\n  text-align: center;\n  cursor: pointer;\n}\n.content-body {\n  margin: 60px 0;\n  padding: 0 10px;\n}\n.prompt {\n  display: none;\n  font-size: 20px;\n  padding: 10px;\n}\n.list {\n  width: 100%;\n}\n.list li {\n  display: flex;\n  position: relative;\n  padding: 5px 10px;\n  margin-top: 10px;\n  border: 1px solid #C0C3C6;\n}\n.list li .status-icon {\n  width: 30px;\n  height: 100%;\n  align-self: center;\n}\n.list li p {\n  margin-left: 10px;\n}\n.list li .text {\n  padding-left: 20px;\n}\n.priority,\n.shedule {\n  height: 60px;\n  line-height: 60px;\n  background-color: #FEEAEA;\n  display: flex;\n  justify-content: space-between;\n  text-align: center;\n  padding: 5px 0;\n  margin-left: -10px;\n  margin-right: -10px;\n}\n.priority .item,\n.shedule .item {\n  flex: 1;\n  cursor: pointer;\n  margin: 0 10px;\n}\n.priority .item.selected,\n.shedule .item.selected {\n  background-color: purple;\n}\n.priority .priority-item,\n.shedule .priority-item,\n.priority .status-item,\n.shedule .status-item {\n  border: 1px solid #C0C3C6;\n}\n.priority .item.active,\n.shedule .item.active {\n  border: 1px solid red;\n}\n.priority .high,\n.shedule .high {\n  display: inline-block;\n  width: 16px;\n  height: 16px;\n  border-radius: 16px;\n  background-color: #CE0B24;\n  border: 1px solid #C0C3C6;\n}\n.priority .mid,\n.shedule .mid {\n  display: inline-block;\n  width: 16px;\n  height: 16px;\n  border-radius: 16px;\n  background-color: #F7E63B;\n  border: 1px solid #C0C3C6;\n}\n.priority .low,\n.shedule .low {\n  display: inline-block;\n  width: 16px;\n  height: 16px;\n  border-radius: 16px;\n  background-color: #437414;\n  border: 1px solid #C0C3C6;\n}\n.shedule {\n  border-top: 1px solid #C0C3C6;\n  background-color: #ECFEEB;\n}\n.ing {\n  display: inline-block;\n  position: relative;\n  border-width: 10px;\n  border-style: solid;\n  border-color: transparent transparent transparent #D8D8D8;\n}\n.will {\n  position: relative;\n  display: inline-block;\n  height: 16px;\n  width: 16px;\n  border: none;\n  border-left: 5px solid #D8D8D8;\n}\n.will:after {\n  content: '';\n  display: 'block';\n  position: absolute;\n  left: 5px;\n  height: 16px;\n  border: none;\n  border-left: inherit;\n}\n.done {\n  height: 16px;\n  border: none;\n  border-left: 16px solid #D8D8D8;\n}\n.list-item .high {\n  border-left-color: #CE0B24;\n}\n.list-item .mid {\n  border-left-color: #F7E63B;\n}\n.list-item .low {\n  border-left-color: #437414;\n}\n.operate {\n  width: 200px;\n  height: 100%;\n  background-color: #D8D8D8;\n  position: absolute;\n  right: 0;\n  top: 0;\n  border-left: 1px solid #C0C3C6;\n  display: flex;\n  display: none;\n}\n.operate span {\n  flex: 1;\n  align-self: center;\n  text-align: center;\n}\n.status {\n  left: 0;\n  border-left: none;\n  border-right: 1px solid #C0C3C6;\n  width: 200px;\n  height: 100%;\n  background-color: #D8D8D8;\n  position: absolute;\n  right: 0;\n  top: 0;\n  border-left: 1px solid #C0C3C6;\n  display: flex;\n  display: none;\n}\n.status span {\n  flex: 1;\n  align-self: center;\n  text-align: center;\n}\n.text-input {\n  margin-top: 20px;\n  padding: 10px;\n  width: 100%;\n  min-height: 200px;\n  display: none;\n  border: 1px solid #C0C3C6;\n}\n", ""]);
 
 // exports
 

@@ -126,13 +126,12 @@ function changeList(type) {
         getByClass('text-input').style.display = 'none';
         let items = getByClass('choose').getElementsByClassName('item');
         for (let i = 0; i < items.length; i++) {
-            items[i].className = "item"
+            items[i].className = "item type"
         }
 
     } else {
         let oneData = {}
         for (let i in data) {
-            console.log(i, data[i]);
             if (data[i].priority == 'high' && data[i].status == 'ing') {
                 oneData[i] = data[i]
                 break;
@@ -166,21 +165,31 @@ function toEdit() {
     let itemsStatus = getByClass('shedule').getElementsByTagName('div');
     for (let i = 0; i < itemsPriotity.length; i++) {
         itemsPriotity[i].className = "item priority-item";
+        if (itemsPriotity[i].getElementsByTagName('span')[0].className == edit_priority) {
+            showActive(itemsPriotity, itemsPriotity[i]);
+        }
     }
     for (let i = 0; i < itemsStatus.length; i++) {
         itemsStatus[i].className = 'item status-item';
+        if (itemsStatus[i].getElementsByTagName('span')[0].className == edit_status) {
+            showActive(itemsStatus, itemsStatus[i]);
+        }
     }
+
 }
 
 function refresh() {
     const taskStorage = window.sessionStorage;
     let d = JSON.stringify(data);
     taskStorage.setItem("taskdata", d);
-    window.location.reload();
+    edit_id = -1;
+    edit_text = 'this is a new task';
+    edit_status = 'will';
+    edit_priority = 'low';
 }
 
 function changeStatus(el, status) {
-    let id=el.getAttribute('data-id');
+    let id = el.getAttribute('data-id');
     data[id].status = status
     el.parentNode.style.display = 'none';
 }
@@ -192,7 +201,10 @@ function operateList(event) {
     if (cls == 'edit') {
         edit_text = data[id].text;
         edit_id = id;
+        edit_priority = data[id].priority;
+        edit_status = data[id].status;
         toEdit();
+        refresh();
         return;
     }
     if (cls == "change-done") {
@@ -209,11 +221,11 @@ function operateList(event) {
         event.target.parentNode.style.display = 'none';
     }
     refresh();
+    changeList('all');
 }
 
 function editData() {
     let changetext = getByClass('text-input').value;
-    console.log(changetext);
     if (edit_id == -1) {
         edit_id = Date.now();
         data[edit_id] = {};
@@ -222,6 +234,7 @@ function editData() {
     data[edit_id].priority = edit_priority;
     data[edit_id].status = edit_status;
     refresh();
+    changeList('all');
 }
 
 function chooseTag(e) {
@@ -235,6 +248,62 @@ function chooseTag(e) {
         let items = document.getElementsByClassName('status-item');
         showActive(items, e.target);
         edit_status = e.target.getElementsByTagName('span')[0].className;
+    }
+    if (e.target && hasClass(e.target, 'type')) {
+        const selected_priority = {};
+        const selected_status = {};
+        const renderList={};
+        if (hasClass(e.target, 'selected')) {
+            removeClass(e.target, 'selected');
+        } else {
+            addClass(e.target, 'selected');
+        }
+        let prioSel=getByClass('priority').getElementsByClassName('selected');
+        for (var i = 0; i < prioSel.length; i++) {
+            let proCls=prioSel[i].getElementsByTagName('span')[0].className;
+            selected_priority[proCls]=true;
+        }
+
+        let stSel=getByClass('shedule').getElementsByClassName('selected');
+        for (var i = 0; i < stSel.length; i++) {
+            let proCls=stSel[i].getElementsByTagName('span')[0].className;
+            selected_status[proCls]=true;
+        }
+        
+        let flag=false;
+        for(let i in data){
+            if(data[i].priority in selected_priority){
+                flag=true;
+                renderList[i]=data[i];
+            }
+        }
+        const renderData={};
+        if(!flag){   
+            for(let i in data){
+            if(data[i].status in selected_status){
+                renderData[i]=data[i];
+            }
+          }
+        }else{
+        //const renderData={};
+        let index=false;
+        for(let i in renderList){
+            if(renderList[i].status in selected_status){
+                index=true;
+                renderData[i]=data[i];
+            }
+        }
+        if(!index){
+            showList(renderList);
+            return;
+        }
+
+    }
+        showList(renderData)
+
+
+
+
     }
 }
 
