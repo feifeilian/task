@@ -1,4 +1,4 @@
-import taskdata from "./taskdata.js"
+//import taskdata from "./taskdata.js"
 import "./hammer.js"
 
 let edit_id = -1;
@@ -87,7 +87,7 @@ function hasClass(ele, clsName) {
     let clsList = ele.className.split(' ');
     for (let i = 0; i < clsList.length; i++) {
         if (clsList[i].trim() == clsName) {
-            return true
+            return true;
         }
     }
     return false;
