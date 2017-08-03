@@ -1,17 +1,21 @@
 <template>
   <div id="edit" class="todolist">
-    <navbar :titles="titles"></navbar>
+     <div class="header">
+            <span><v-touch tag="button" @tap="cancelEdit">cancel</v-touch></span>
+           <span>todolist</span>
+           <span><v-touch tag="button" @tap="changeTaskList(editdata.id)">done</v-touch></span>
+    </div>
     <div class="content-body">      
     	<div class="choose">
     	    <div class="priority">
-    	        <div :class="['item priority-item',{active:content.priority=='high'}]"><span class="high"></span> 高优</div>
-    	        <div :class="['item priority-item',{active:content.priority=='mid'}]"><span class="mid"></span> 中优</div>
-    	        <div :class="['item priority-item',{active:content.priority=='low'}]"><span class="low"></span> 低优</div>
+    	        <v-touch :class="['item priority-item',{active:content.priority=='high'}]" @tap="choosePriority('high')"><span class="high"></span> 高优</v-touch>
+    	        <v-touch :class="['item priority-item',{active:content.priority=='mid'}]" @tap="choosePriority('mid')"><span class="mid"></span> 中优</v-touch>
+    	        <v-touch :class="['item priority-item',{active:content.priority=='low'}]" @tap="choosePriority('low')"><span class="low"></span> 低优</v-touch>
     	    </div>
     	    <div class="shedule">
-    	        <div :class="['item priority-item',{active:content.status=='ing'}]"><span class="ing"></span> 进行中</div>
-    	        <div :class="['item priority-item',{active:content.status=='will'}]"><span class="will"></span> 待办</div>
-    	        <div :class="['item priority-item',{active:content.status=='done'}]"><span class="done"></span> 已完成</div>
+    	        <v-touch :class="['item priority-item',{active:content.status=='ing'}]" @tap="chooseStatus('ing')"><span class="ing"></span> 进行中</v-touch>
+    	        <v-touch :class="['item priority-item',{active:content.status=='will'}]" @tap="chooseStatus('will')"><span class="will"></span> 待办</v-touch>
+    	        <v-touch :class="['item priority-item',{active:content.status=='done'}]" @tap="chooseStatus('done')"><span class="done"></span> 已完成</v-touch>
     	    </div>
     	</div>
         <textarea name="" id="" cols="30" rows="10" class='text-input' v-model="content.text"></textarea>
@@ -20,36 +24,70 @@
 </template>
 
 <script>
-import navbar from '../components/navbar.vue'
 export default {
   name: 'edit',
    components:{
-    navbar,
 },
-    props:['editdata'],
+    props:['editdata','taskdata'],
   data(){
     return {
     	one:false,
         content:{},
-        titles:[
-        {
-                "name":'cancle',
-                "to":'/',
-            },
-             {
-                "name":'todolist',
-                "to":'',
-            },
-             {
-                "name":'done',
-                "to":'/',
-            }
-        ],
     }
   },
-  mounted(){
+methods:{
+    choosePriority(pri){
+        this.content.priority=pri;
+    },
+    chooseStatus(sta){
+        this.content.status=sta;
+    },
+    cancelEdit(){
+            this.$router.push('/');
+            this.showAll();
+            console.log(this.editdata.id);
+            //this.resetEditData();           
+    },
+    showAll(){
+        this.showdata=[];
+        this.taskdata.forEach((task)=>{
+            this.showdata.push(task);
+        })
+    },
+    changeTaskList(id){
+        this.showdata=[];
+        if(id!=-1){  
+            this.editdata=this.content;
+            this.taskdata.forEach((task)=>{
+                if(this.editdata.id==task.id){
+                    task=this.editdata;
+                }
+                this.showdata.push(task);
+            })
+           
+        }else{
+            this.content.id=Date.now();
+            this.editdata=this.content;
+            this.taskdata.forEach((task)=>{
+                 this.showdata.push(task);
+            })
+            this.showdata.push(this.editdata);
+            console.log(this.showdata);
+        }
+        //this.resetEditData();
+        this.$router.push('/');
+        
+      },
+    resetEditData(){
+        this.editdata.text="this is a new task";
+        this.editdata.priority="low";
+        this.editdata.status="will";
+        this.editdata.id=-1;
+    }, 
+},
+mounted(){
     this.content=this.editdata;
-  }
+    }
 }
 </script>
 
@@ -69,14 +107,35 @@ export default {
     background-color: @color;
     .border
 }
-
+.header {
+    width: @mainwidth;
+    height: @navheight;
+    line-height: @navheight;
+    position: fixed;
+    background-color: #D8D8D8;
+    border-bottom: 1px solid @bordercolor;
+    display: flex;
+    font-weight: 700;
+    font-size: 20px;
+    top: 0;
+    button {
+        font-weight: 700;
+        font-size: 20px;
+        cursor: pointer;   
+    } 
+    span,a {
+        flex: 1;
+        text-align: center;
+        cursor: pointer;
+        padding: 5px 10px;
+    }
+}
 .todolist {
     width: @mainwidth;
     min-height: 100vh;
     margin: 0 auto;
     .border
 }
-
 
 .content-body {
     margin: @navheight 0;

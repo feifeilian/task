@@ -1,19 +1,23 @@
 <template>
 
   <div id="index" class="todolist">
-    <navbar :titles="titles"></navbar>
+    <div class="header">
+           <span></span>
+           <span>todolist</span>
+           <span><v-touch tag="button" @tap="editData(-1)">add</v-touch tag="button"></span>
+    </div>
     <div class="content-body">
         <div class="prompt" v-if="one" >Now! The One Thing is</div>        
             <div class="choose" v-else>
                 <div class="priority">
-                    <div :class="['item type',{selected:priority.high}]" @click="prioritySelect('high')"><span class="high"></span> 高优</div>
-                    <div :class="['item type',{selected:priority.mid}]" @click="prioritySelect('mid')"><span class="mid"></span> 中优</div>
-                    <div :class="['item type',{selected:priority.low}]" @click="prioritySelect('low')"><span class="low"></span> 低优</div>
+                    <div :class="['item',{selected:priority.high}]" @click="prioritySelect('high')"><span class="high"></span> 高优</div>
+                    <div :class="['item',{selected:priority.mid}]" @click="prioritySelect('mid')"><span class="mid"></span> 中优</div>
+                    <div :class="['item',{selected:priority.low}]" @click="prioritySelect('low')"><span class="low"></span> 低优</div>
                 </div>
                 <div class="shedule">
-                    <div :class="['item type',{selected:status.ing}]" @click="statusSelect('ing')"><span class="ing"></span> 进行中</div>
-                    <div :class="['item type',{selected:status.will}]" @click="statusSelect('will')"><span class="will"></span> 待办</div>
-                    <div :class="['item type',{selected:status.done}]" @click="statusSelect('done')"><span class="done"></span> 已完成</div>
+                    <div :class="['item',{selected:status.ing}]" @click="statusSelect('ing')"><span class="ing"></span> 进行中</div>
+                    <div :class="['item',{selected:status.will}]" @click="statusSelect('will')"><span class="will"></span> 待办</div>
+                    <div :class="['item',{selected:status.done}]" @click="statusSelect('done')"><span class="done"></span> 已完成</div>
                 </div>
             </div>
             <ul class="list">
@@ -23,15 +27,13 @@
                     </div>
                     <p>{{ item.text }}</p>
                     <div class="operate" v-if="item.id==editId">
-                        
-                        <v-touch tag="span" @tap="editData(item.id)">编辑</v-touch>
-                                
-                        <v-touch tag="span" class="delete" @tap="deleteData(item.id)">删除</v-touch>
+                        <v-touch tag="span" @tap="editData(item.id)">编辑</v-touch>        
+                        <v-touch tag="span" @tap="deleteData(item.id)">删除</v-touch>
                     </div>
                     <div class="status" v-if="item.id==statusId">
-                        <v-touch tag="span" class="change-done"   @tap="changeStatus(item.id,'done')">已完成</v-touch>
-                        <v-touch tag="span" class="change-willdo" @tap="changeStatus(item.id,'will')">待办</v-touch>
-                        <v-touch tag="span" class="change-doing"  @tap="changeStatus(item.id,'ing')">进行中</v-touch>
+                        <v-touch tag="span"  @tap="changeStatus(item.id,'done')">已完成</v-touch>
+                        <v-touch tag="span"  @tap="changeStatus(item.id,'will')">待办</v-touch>
+                        <v-touch tag="span"  @tap="changeStatus(item.id,'ing')">进行中</v-touch>
                     </div>
                 </v-touch>
             </ul>
@@ -42,12 +44,10 @@
 
 <script>
 import bottom from '../components/bottom.vue'
-import navbar from '../components/navbar.vue'
 export default {
     name: 'index',
     components:{
         bottom,
-        navbar,
     },
     props:['taskdata','edit'],
     data(){
@@ -181,7 +181,7 @@ export default {
     } 
   },
   mounted(){
-    this.showdata=this.taskdata
+    this.showdata=this.taskdata;
   }
 }
 
@@ -202,6 +202,29 @@ export default {
     border-radius: 16px;
     background-color: @color;
     .border
+}
+.header {
+    width: @mainwidth;
+    height: @navheight;
+    line-height: @navheight;
+    position: fixed;
+    background-color: #D8D8D8;
+    border-bottom: 1px solid @bordercolor;
+    display: flex;
+    font-weight: 700;
+    font-size: 20px;
+    top: 0;
+    button {
+        font-weight: 700;
+        font-size: 20px;
+        cursor: pointer;   
+    } 
+    span,a {
+        flex: 1;
+        text-align: center;
+        cursor: pointer;
+        padding: 5px 10px;
+    }
 }
 
 .todolist {

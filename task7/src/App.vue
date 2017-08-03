@@ -10,9 +10,10 @@ export default {
   data(){
   	return{
     editdata:{
-      "text":"add new",
-      "priority": "high",
-      "status": "done",
+      "text":"this is a new task",
+      "priority": "low",
+      "status": "will",
+       "id":-1,
     },
   	taskdata:[
         {
