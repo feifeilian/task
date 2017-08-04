@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <router-view :taskdata="taskdata" :edit='edit' :editdata="editdata" :saveData="saveData"></router-view>   
+    <router-view :taskdata="taskdata" :edit='edit' :editdata="editdata" :saveData="saveData" :cancelData="cancelData"></router-view>   
   </div>
 </template>
 
@@ -42,10 +42,8 @@ export default {
   },
   methods:{
     edit(id){
-      console.log(id);
         this.taskdata.forEach((item)=>{
           if(item.id==id){
-            console.log('==')
             Object.keys(item).forEach((k)=>{
               this.editdata[k]=item[k];
             })  
@@ -61,8 +59,10 @@ export default {
        "id":-1,
     }
   },
-    saveData(content){
-      
+   cancelData(){
+      this.resetEdit();
+   },
+    saveData(content){   
       for (var i = 0; i < this.taskdata.length; i++) {
         if(this.taskdata[i].id==content.id){
           this.taskdata[i].text=content.text;
@@ -72,17 +72,11 @@ export default {
           return;
         }
       }
-      console.log('not')
-      content.id=Date.now()
+      content.id=Date.now();
       this.taskdata.push(content);
-      this.resetEdit()
-
-
+      this.resetEdit();
     }
   },
-  mounted(){
-   
-  }
 }
   
 </script>

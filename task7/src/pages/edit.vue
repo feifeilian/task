@@ -1,7 +1,7 @@
 <template>
   <div id="edit" class="todolist">
      <div class="header">
-            <span><v-touch tag="button" @tap="cancelEdit">cancel</v-touch></span>
+            <span><v-touch tag="button" @tap="cancel">cancel</v-touch></span>
            <span>todolist</span>
            <span><v-touch tag="button" @tap="save">done</v-touch></span>
     </div>
@@ -28,7 +28,7 @@ export default {
   name: 'edit',
    components:{
 },
-    props:['editdata','taskdata','saveData'],
+    props:['editdata','taskdata','saveData','cancelData'],
   data(){
     return {
     	one:false,
@@ -42,49 +42,14 @@ methods:{
     chooseStatus(sta){
         this.content.status=sta;
     },
-    cancelEdit(){
-            this.$router.push('/');
-            this.showAll();
-            console.log(this.editdata.id);
-            //this.resetEditData();           
-    },
-    showAll(){
-        this.showdata=[];
-        this.taskdata.forEach((task)=>{
-            this.showdata.push(task);
-        })
+    cancel(){
+            this.cancelData();
+            this.$router.push('/');         
     },
     save(){
-        this.saveData(this.content)
-        this.$router.push('/');
-        // this.showdata=[];
-        // if(id!=-1){  
-        //     this.editdata=this.content;
-        //     this.taskdata.forEach((task)=>{
-        //         if(this.editdata.id==task.id){
-        //             task=this.editdata;
-        //         }
-        //         this.showdata.push(task);
-        //     })
-           
-        // }else{
-        //     this.content.id=Date.now();
-        //     this.editdata=this.content;
-        //     this.taskdata.push(this.editdata);
-           
-        //     this.showdata.push(this.editdata);
-        //     console.log(this.showdata);
-        // }
-        // //this.resetEditData();
-        // this.$router.push('/');
-        
+        this.saveData(this.content);
+        this.$router.push('/');      
       },
-    resetEditData(){
-        this.editdata.text="this is a new task";
-        this.editdata.priority="low";
-        this.editdata.status="will";
-        this.editdata.id=-1;
-    }, 
 },
 mounted(){
     this.content=this.editdata;
