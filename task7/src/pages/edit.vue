@@ -3,7 +3,7 @@
      <div class="header">
             <span><v-touch tag="button" @tap="cancelEdit">cancel</v-touch></span>
            <span>todolist</span>
-           <span><v-touch tag="button" @tap="changeTaskList(editdata.id)">done</v-touch></span>
+           <span><v-touch tag="button" @tap="save">done</v-touch></span>
     </div>
     <div class="content-body">      
     	<div class="choose">
@@ -28,7 +28,7 @@ export default {
   name: 'edit',
    components:{
 },
-    props:['editdata','taskdata'],
+    props:['editdata','taskdata','saveData'],
   data(){
     return {
     	one:false,
@@ -54,28 +54,29 @@ methods:{
             this.showdata.push(task);
         })
     },
-    changeTaskList(id){
-        this.showdata=[];
-        if(id!=-1){  
-            this.editdata=this.content;
-            this.taskdata.forEach((task)=>{
-                if(this.editdata.id==task.id){
-                    task=this.editdata;
-                }
-                this.showdata.push(task);
-            })
-           
-        }else{
-            this.content.id=Date.now();
-            this.editdata=this.content;
-            this.taskdata.forEach((task)=>{
-                 this.showdata.push(task);
-            })
-            this.showdata.push(this.editdata);
-            console.log(this.showdata);
-        }
-        //this.resetEditData();
+    save(){
+        this.saveData(this.content)
         this.$router.push('/');
+        // this.showdata=[];
+        // if(id!=-1){  
+        //     this.editdata=this.content;
+        //     this.taskdata.forEach((task)=>{
+        //         if(this.editdata.id==task.id){
+        //             task=this.editdata;
+        //         }
+        //         this.showdata.push(task);
+        //     })
+           
+        // }else{
+        //     this.content.id=Date.now();
+        //     this.editdata=this.content;
+        //     this.taskdata.push(this.editdata);
+           
+        //     this.showdata.push(this.editdata);
+        //     console.log(this.showdata);
+        // }
+        // //this.resetEditData();
+        // this.$router.push('/');
         
       },
     resetEditData(){
